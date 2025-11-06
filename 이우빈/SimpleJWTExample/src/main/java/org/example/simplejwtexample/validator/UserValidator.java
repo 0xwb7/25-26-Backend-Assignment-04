@@ -7,7 +7,7 @@ public class UserValidator {
 
     private static final String ROLE_ADMIN = "ROLE_ADMIN";
 
-    public static Long currentUserIdorNull() {
+    public static Long currentUserIDorNull() {
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
 
         if (authentication == null) {

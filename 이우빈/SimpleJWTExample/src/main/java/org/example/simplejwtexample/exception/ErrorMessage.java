@@ -1,5 +1,8 @@
 package org.example.simplejwtexample.exception;
 
+import lombok.Getter;
+
+@Getter
 public enum ErrorMessage {
     ALREADY_EXIST_EMAIL("이미 존재하는 이메일입니다."),
     WRONG_EMAIL_INPUT("이메일 또는 비밀번호가 올바르지 않습니다."),
@@ -17,7 +20,4 @@ public enum ErrorMessage {
         this.message = message;
     }
 
-    public String getMessage() {
-        return message;
-    }
 }

@@ -8,7 +8,7 @@ import org.example.simplejwtexample.domain.Comment;
 @Builder
 public class CommentResponse {
     private Long commentId;
-    private Long postId;
+    private String postTitle;
     private Long authorId;
     private String authorName;
     private String content;
@@ -16,7 +16,7 @@ public class CommentResponse {
     public static CommentResponse commentInfo(Comment comment) {
         return CommentResponse.builder()
                 .commentId(comment.getId())
-                .postId(comment.getPost().getId())
+                .postTitle(comment.getPost().getTitle())
                 .authorId(comment.getAuthor().getId())
                 .authorName(comment.getAuthor().getName())
                 .content(comment.getContent())

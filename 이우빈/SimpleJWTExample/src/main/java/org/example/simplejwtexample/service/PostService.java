@@ -1,6 +1,7 @@
 package org.example.simplejwtexample.service;
 
 import lombok.RequiredArgsConstructor;
+import org.example.simplejwtexample.domain.Comment;
 import org.example.simplejwtexample.domain.Post;
 import org.example.simplejwtexample.domain.User;
 import org.example.simplejwtexample.dto.post.request.PostCreateRequest;
@@ -15,12 +16,15 @@ import org.example.simplejwtexample.validator.UserValidator;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.List;
+
 @Service
 @RequiredArgsConstructor
 public class PostService {
 
     private final PostRepository postRepository;
     private final UserRepository userRepository;
+    private final CommentRepository commentRepository;
 
     @Transactional
     public PostResponse createPost(PostCreateRequest postCreateRequest) {
@@ -37,12 +41,14 @@ public class PostService {
         return PostResponse.postInfo(savedPost);
     }
 
-    @Transactional
+    @Transactional(readOnly = true)
     public PostResponse getPost(Long id) {
         Post post = postRepository.findById(id)
                 .orElseThrow(() -> new BadRequestException(ErrorMessage.NOT_EXIST_POST));
 
-        return PostResponse.postInfo(post);
+        List<Comment> comments = commentRepository.findByPostIdOrderByIdAsc(id);
+
+        return PostResponse.postInfoWithComments(post, comments);
     }
 
     @Transactional

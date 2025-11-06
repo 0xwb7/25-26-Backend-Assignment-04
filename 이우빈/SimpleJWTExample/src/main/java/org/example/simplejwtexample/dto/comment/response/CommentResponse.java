@@ -22,5 +22,4 @@ public class CommentResponse {
                 .content(comment.getContent())
                 .build();
     }
-
 }

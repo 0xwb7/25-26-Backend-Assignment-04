@@ -7,6 +7,8 @@ import org.example.simplejwtexample.domain.User;
 import org.example.simplejwtexample.dto.comment.request.CommentCreateRequest;
 import org.example.simplejwtexample.dto.comment.request.CommentUpdateRequest;
 import org.example.simplejwtexample.dto.comment.response.CommentResponse;
+import org.example.simplejwtexample.exception.BadRequestException;
+import org.example.simplejwtexample.exception.ErrorMessage;
 import org.example.simplejwtexample.repository.CommentRepository;
 import org.example.simplejwtexample.repository.PostRepository;
 import org.example.simplejwtexample.repository.UserRepository;
@@ -27,9 +29,9 @@ public class CommentService {
     public CommentResponse createComment(Long postId, CommentCreateRequest commentCreateRequest) {
         Long currentId = requiredLogin();
         Post post = postRepository.findById(postId)
-                .orElseThrow(() -> new RuntimeException("존재하지 않는 글입니다."));
+                .orElseThrow(() -> new BadRequestException(ErrorMessage.NOT_EXIST_POST));
         User author = userRepository.findById(currentId)
-                .orElseThrow(() -> new RuntimeException("존재하지 않는 사용자입니다."));
+                .orElseThrow(() -> new BadRequestException(ErrorMessage.NOT_EXIST_USER));
         Comment savedComment = commentRepository.save(Comment.builder()
                 .post(post)
                 .author(author)
@@ -50,7 +52,7 @@ public class CommentService {
 
     public CommentResponse updateComment(Long id, CommentUpdateRequest commentUpdateRequest) {
         Comment comment = commentRepository.findById(id)
-                .orElseThrow(() -> new RuntimeException("존재하지 않는 댓글입니다."));
+                .orElseThrow(() -> new BadRequestException(ErrorMessage.NOT_EXIST_COMMENT));
         checkOwnerOrAdmin(comment.getAuthor().getId());
         comment.updateComment(commentUpdateRequest.getContent());
 
@@ -59,7 +61,7 @@ public class CommentService {
 
     public void deleteComment(Long id) {
         Comment comment = commentRepository.findById(id)
-                .orElseThrow(() -> new RuntimeException("존재하지 않는 댓글입니다."));
+                .orElseThrow(() -> new BadRequestException(ErrorMessage.NOT_EXIST_COMMENT));
         checkOwnerOrAdmin(comment.getAuthor().getId());
         commentRepository.delete(comment);
     }
@@ -68,7 +70,7 @@ public class CommentService {
         Long id = UserValidator.currentUserIDorNull();
 
         if (id == null) {
-            throw new RuntimeException("로그인이 필요한 서비스입니다.");
+            throw new BadRequestException(ErrorMessage.NEED_TO_LOGIN);
         }
 
         return id;
@@ -78,7 +80,7 @@ public class CommentService {
         Long myPost = requiredLogin();
 
         if (!myPost.equals(id) && !UserValidator.isAdmin()) {
-            throw new RuntimeException("수정/삭제 권한이 없습니다.");
+            throw new BadRequestException(ErrorMessage.NO_PERMISSION);
         }
     }
 }

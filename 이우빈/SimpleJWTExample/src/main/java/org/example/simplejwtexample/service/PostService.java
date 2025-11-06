@@ -7,6 +7,8 @@ import org.example.simplejwtexample.domain.User;
 import org.example.simplejwtexample.dto.post.request.PostCreateRequest;
 import org.example.simplejwtexample.dto.post.request.PostUpdateRequest;
 import org.example.simplejwtexample.dto.post.response.PostResponse;
+import org.example.simplejwtexample.exception.BadRequestException;
+import org.example.simplejwtexample.exception.ErrorMessage;
 import org.example.simplejwtexample.repository.PostRepository;
 import org.example.simplejwtexample.repository.UserRepository;
 import org.example.simplejwtexample.validator.UserValidator;
@@ -25,7 +27,7 @@ public class PostService {
     public PostResponse createPost(PostCreateRequest postCreateRequest) {
         Long currentId = requiredLogin();
         User author = userRepository.findById(currentId)
-                .orElseThrow(() -> new RuntimeException("존재하지 않는 사용자입니다."));
+                .orElseThrow(() -> new BadRequestException(ErrorMessage.NOT_EXIST_USER));
 
         Post savedPost = postRepository.save(Post.builder()
                 .author(author)
@@ -38,7 +40,7 @@ public class PostService {
 
     public PostResponse getPost(Long id) {
         Post post = postRepository.findById(id)
-                .orElseThrow(() -> new RuntimeException("존재하지 않는 글입니다."));
+                .orElseThrow(() -> new BadRequestException(ErrorMessage.NOT_EXIST_POST));
 
         return PostResponse.postInfo(post);
     }
@@ -51,7 +53,7 @@ public class PostService {
 
     public PostResponse updatePost(Long id, PostUpdateRequest postUpdateRequest) {
         Post post = postRepository.findById(id)
-                .orElseThrow(() -> new RuntimeException("존재하지 않는 글입니다."));
+                .orElseThrow(() -> new BadRequestException(ErrorMessage.NOT_EXIST_POST));
         checkOwnerOrAdmin(post.getAuthor().getId());
         post.updatePost(postUpdateRequest.getTitle(), postUpdateRequest.getContent());
 
@@ -60,7 +62,7 @@ public class PostService {
 
     public void deletePost(Long id) {
         Post post = postRepository.findById(id)
-                .orElseThrow(() -> new RuntimeException("존재하지 않는 글입니다."));
+                .orElseThrow(() -> new BadRequestException(ErrorMessage.NOT_EXIST_POST));
         checkOwnerOrAdmin(post.getAuthor().getId());
         postRepository.delete(post);
     }
@@ -69,7 +71,7 @@ public class PostService {
         Long id = UserValidator.currentUserIDorNull();
 
         if (id == null) {
-            throw new RuntimeException("로그인이 필요한 서비스입니다.");
+            throw new BadRequestException(ErrorMessage.NEED_TO_LOGIN);
         }
 
         return id;
@@ -79,7 +81,7 @@ public class PostService {
         Long myPost = requiredLogin();
 
         if (!myPost.equals(id) && !UserValidator.isAdmin()) {
-            throw new RuntimeException("수정/삭제 권한이 없습니다.");
+            throw new BadRequestException(ErrorMessage.NO_PERMISSION);
         }
     }
 }

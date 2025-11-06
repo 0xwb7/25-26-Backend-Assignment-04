@@ -1,0 +1,22 @@
+package org.example.simplejwtexample.exception;
+
+public enum ErrorMessage {
+    ALREADY_EXIST_EMAIL("이미 존재하는 이메일입니다."),
+    WRONG_EMAIL_INPUT("이메일 또는 비밀번호가 올바르지 않습니다."),
+    WRONG_PASSWORD_INPUT("이메일 또는 비밀번호가 올바르지 않습니다."),
+    NOT_EXIST_USER("존재하지 않는 사용자입니다."),
+    NOT_EXIST_POST("존재하지 않는 글입니다."),
+    NEED_TO_LOGIN("로그인이 필요한 서비스입니다."),
+    NO_PERMISSION("수정/삭제 권한이 없습니다."),
+    NOT_EXIST_COMMENT("존재하지 않는 댓글입니다.");
+
+    private final String message;
+
+    ErrorMessage(String message) {
+        this.message = message;
+    }
+
+    public String getMessage() {
+        return message;
+    }
+}

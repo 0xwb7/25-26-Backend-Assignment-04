@@ -1,4 +1,4 @@
-package org.example.simplejwtexample.dto;
+package org.example.simplejwtexample.dto.user;
 
 import jakarta.validation.constraints.NotNull;
 import lombok.Getter;
@@ -6,7 +6,10 @@ import lombok.NoArgsConstructor;
 
 @Getter
 @NoArgsConstructor
-public class LoginRequest {
+public class SignUpRequest {
+
+    @NotNull(message = "이름 입력은 필수입니다.")
+    private String userName;
 
     @NotNull(message = "이메일 입력은 필수입니다.")
     private String email;

@@ -1,4 +1,4 @@
-package org.example.simplejwtexample.dto;
+package org.example.simplejwtexample.dto.user;
 
 import lombok.Builder;
 import lombok.Getter;

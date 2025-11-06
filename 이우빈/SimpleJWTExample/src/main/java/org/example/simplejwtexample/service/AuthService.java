@@ -10,9 +10,9 @@ import org.example.simplejwtexample.exception.BadRequestException;
 import org.example.simplejwtexample.exception.ErrorMessage;
 import org.example.simplejwtexample.jwt.TokenProvider;
 import org.example.simplejwtexample.repository.UserRepository;
-import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 @Service
 @RequiredArgsConstructor
@@ -22,6 +22,7 @@ public class AuthService {
     private final PasswordEncoder passwordEncoder;
     private final TokenProvider tokenProvider;
 
+    @Transactional
     public void signUp(SignUpRequest signUpRequest) {
         userRepository.findByEmail(signUpRequest.getEmail()).ifPresent(user -> {
             throw new BadRequestException(ErrorMessage.ALREADY_EXIST_EMAIL);
@@ -37,6 +38,7 @@ public class AuthService {
         String token = tokenProvider.createToken(saveUser.getId(), saveUser.getRole().name());
     }
 
+    @Transactional
     public TokenDto login(LoginRequest loginRequest) {
         User user = userRepository.findByEmail(loginRequest.getEmail())
                 .orElseThrow(() -> new BadRequestException(ErrorMessage.WRONG_EMAIL_INPUT));

@@ -1,7 +1,6 @@
 package org.example.simplejwtexample.service;
 
 import lombok.RequiredArgsConstructor;
-import org.apache.catalina.security.SecurityUtil;
 import org.example.simplejwtexample.domain.Post;
 import org.example.simplejwtexample.domain.User;
 import org.example.simplejwtexample.dto.post.request.PostCreateRequest;
@@ -9,13 +8,12 @@ import org.example.simplejwtexample.dto.post.request.PostUpdateRequest;
 import org.example.simplejwtexample.dto.post.response.PostResponse;
 import org.example.simplejwtexample.exception.BadRequestException;
 import org.example.simplejwtexample.exception.ErrorMessage;
+import org.example.simplejwtexample.repository.CommentRepository;
 import org.example.simplejwtexample.repository.PostRepository;
 import org.example.simplejwtexample.repository.UserRepository;
 import org.example.simplejwtexample.validator.UserValidator;
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.PageRequest;
-import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 @Service
 @RequiredArgsConstructor
@@ -24,6 +22,7 @@ public class PostService {
     private final PostRepository postRepository;
     private final UserRepository userRepository;
 
+    @Transactional
     public PostResponse createPost(PostCreateRequest postCreateRequest) {
         Long currentId = requiredLogin();
         User author = userRepository.findById(currentId)
@@ -38,6 +37,7 @@ public class PostService {
         return PostResponse.postInfo(savedPost);
     }
 
+    @Transactional
     public PostResponse getPost(Long id) {
         Post post = postRepository.findById(id)
                 .orElseThrow(() -> new BadRequestException(ErrorMessage.NOT_EXIST_POST));
@@ -45,12 +45,7 @@ public class PostService {
         return PostResponse.postInfo(post);
     }
 
-    public Page<PostResponse> postList(int page, int size) {
-        Page<Post> pageResponse = postRepository.findAll(PageRequest.of(page, size, Sort.by(Sort.Direction.DESC, "id")));
-
-        return pageResponse.map(PostResponse::postInfo);
-    }
-
+    @Transactional
     public PostResponse updatePost(Long id, PostUpdateRequest postUpdateRequest) {
         Post post = postRepository.findById(id)
                 .orElseThrow(() -> new BadRequestException(ErrorMessage.NOT_EXIST_POST));
@@ -60,6 +55,7 @@ public class PostService {
         return PostResponse.postInfo(post);
     }
 
+    @Transactional
     public void deletePost(Long id) {
         Post post = postRepository.findById(id)
                 .orElseThrow(() -> new BadRequestException(ErrorMessage.NOT_EXIST_POST));

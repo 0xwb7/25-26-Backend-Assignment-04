@@ -17,6 +17,7 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 @Service
 @RequiredArgsConstructor
@@ -26,6 +27,7 @@ public class CommentService {
     private final UserRepository userRepository;
     private final PostRepository postRepository;
 
+    @Transactional
     public CommentResponse createComment(Long postId, CommentCreateRequest commentCreateRequest) {
         Long currentId = requiredLogin();
         Post post = postRepository.findById(postId)
@@ -41,6 +43,7 @@ public class CommentService {
         return CommentResponse.commentInfo(savedComment);
     }
 
+    @Transactional
     public Page<CommentResponse> listByPost(Long postId, int page, int size) {
         Page<Comment> pageResponse = commentRepository.findByPostId(
                 postId,
@@ -50,6 +53,7 @@ public class CommentService {
         return pageResponse.map(CommentResponse::commentInfo);
     }
 
+    @Transactional
     public CommentResponse updateComment(Long id, CommentUpdateRequest commentUpdateRequest) {
         Comment comment = commentRepository.findById(id)
                 .orElseThrow(() -> new BadRequestException(ErrorMessage.NOT_EXIST_COMMENT));
@@ -59,6 +63,7 @@ public class CommentService {
         return CommentResponse.commentInfo(comment);
     }
 
+    @Transactional
     public void deleteComment(Long id) {
         Comment comment = commentRepository.findById(id)
                 .orElseThrow(() -> new BadRequestException(ErrorMessage.NOT_EXIST_COMMENT));

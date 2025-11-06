@@ -28,14 +28,12 @@ public class AuthService {
             throw new BadRequestException(ErrorMessage.ALREADY_EXIST_EMAIL);
         });
 
-        User saveUser = userRepository.save(User.builder()
+        userRepository.save(User.builder()
                 .email(signUpRequest.getEmail())
                 .password(passwordEncoder.encode(signUpRequest.getPassword()))
                 .name(signUpRequest.getUserName())
                 .role(Role.ROLE_USER)
                 .build());
-
-        tokenProvider.createToken(saveUser.getId(), saveUser.getRole().name());
     }
 
     @Transactional

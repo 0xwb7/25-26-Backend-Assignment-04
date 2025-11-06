@@ -35,7 +35,7 @@ public class AuthService {
                 .role(Role.ROLE_USER)
                 .build());
 
-        String token = tokenProvider.createToken(saveUser.getId(), saveUser.getRole().name());
+        tokenProvider.createToken(saveUser.getId(), saveUser.getRole().name());
     }
 
     @Transactional

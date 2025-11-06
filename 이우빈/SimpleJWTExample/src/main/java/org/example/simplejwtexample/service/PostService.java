@@ -66,6 +66,8 @@ public class PostService {
         Post post = postRepository.findById(id)
                 .orElseThrow(() -> new BadRequestException(ErrorMessage.NOT_EXIST_POST));
         checkOwnerOrAdmin(post.getAuthor().getId());
+
+        commentRepository.deleteByPostId(id);
         postRepository.delete(post);
     }
 

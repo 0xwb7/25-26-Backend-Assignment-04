@@ -7,4 +7,6 @@ import java.util.List;
 
 public interface CommentRepository extends JpaRepository<Comment, Long> {
     List<Comment> findByPostIdOrderByIdAsc(Long postId);
+    void deleteByPostId(Long postId);
+    void deleteByAuthorId(Long authorId);
 }

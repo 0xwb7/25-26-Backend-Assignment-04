@@ -30,16 +30,31 @@ public class TokenProvider {
 
     private final SecretKey key;
     private final long accessTokenValidityTime;
+    private final long refreshTokenValidityTime;
 
     public TokenProvider(@Value("${jwt.secret}") String secretKey,
-                         @Value("${jwt.access-token-validity-in-milliseconds}") long accessTokenValidity) {
+                         @Value("${jwt.access-token-validity-in-milliseconds}") long accessTokenValidity,
+                         @Value("${jwt.refresh-token-validity-in-milliseconds}") long refreshTokenValidity) {
         this.key = Keys.hmacShaKeyFor(Decoders.BASE64.decode(secretKey));
         this.accessTokenValidityTime = accessTokenValidity;
+        this.refreshTokenValidityTime = refreshTokenValidity;
     }
 
-    public String createToken(Long userId, String role) {
+    public String createAccessToken(Long userId, String role) {
         Date now = new Date();
         Date expiration = new Date(now.getTime() + accessTokenValidityTime);
+
+        return Jwts.builder()
+                .subject(userId.toString())
+                .claim(ROLE_CLAIM, role)
+                .expiration(expiration)
+                .signWith(key)
+                .compact();
+    }
+
+    public String createRefreshToken(Long userId, String role) {
+        Date now = new Date();
+        Date expiration = new Date(now.getTime() + refreshTokenValidityTime);
 
         return Jwts.builder()
                 .subject(userId.toString())
@@ -99,5 +114,10 @@ public class TokenProvider {
         } catch (SecurityException e) {
             throw new RuntimeException("토큰 복호화에 실패했습니다.");
         }
+    }
+
+    public Long getUserId(String token) {
+        Claims claims = parseClaim(token);
+        return Long.parseLong(claims.getSubject());
     }
 }

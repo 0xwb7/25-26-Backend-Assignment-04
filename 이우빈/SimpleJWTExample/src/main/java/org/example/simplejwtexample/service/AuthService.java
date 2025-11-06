@@ -1,6 +1,7 @@
 package org.example.simplejwtexample.service;
 
 import lombok.RequiredArgsConstructor;
+import org.example.simplejwtexample.domain.RefreshToken;
 import org.example.simplejwtexample.domain.Role;
 import org.example.simplejwtexample.domain.User;
 import org.example.simplejwtexample.dto.user.LoginRequest;
@@ -9,6 +10,7 @@ import org.example.simplejwtexample.dto.user.TokenDto;
 import org.example.simplejwtexample.exception.BadRequestException;
 import org.example.simplejwtexample.exception.ErrorMessage;
 import org.example.simplejwtexample.jwt.TokenProvider;
+import org.example.simplejwtexample.repository.RefreshTokenRepository;
 import org.example.simplejwtexample.repository.UserRepository;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
@@ -21,6 +23,7 @@ public class AuthService {
     private final UserRepository userRepository;
     private final PasswordEncoder passwordEncoder;
     private final TokenProvider tokenProvider;
+    private final RefreshTokenRepository refreshTokenRepository;
 
     @Transactional
     public void signUp(SignUpRequest signUpRequest) {
@@ -45,9 +48,52 @@ public class AuthService {
             throw new BadRequestException(ErrorMessage.WRONG_PASSWORD_INPUT);
         }
 
-        String token = tokenProvider.createToken(user.getId(), user.getRole().name());
+        String accessToken = tokenProvider.createAccessToken(user.getId(), user.getRole().name());
+        String refreshToken = tokenProvider.createRefreshToken(user.getId(), user.getRole().name());
+
+        refreshTokenRepository.findByUserId(user.getId())
+                .ifPresentOrElse(
+                        rt -> rt.updateRefreshToken(refreshToken),
+                        () -> refreshTokenRepository.save(
+                                RefreshToken.builder()
+                                        .userId(user.getId())
+                                        .token(refreshToken)
+                                        .build()
+                        )
+                );
+
+        return tokenBuilder(accessToken, refreshToken);
+    }
+
+    @Transactional
+    public TokenDto refreshToken(String refreshToken) {
+        if (!tokenProvider.validateToken(refreshToken)) {
+            throw new BadRequestException(ErrorMessage.INVALID_REFRESH_TOKEN);
+        }
+
+        RefreshToken storedRefreshToken = refreshTokenRepository.findByToken(refreshToken)
+                .orElseThrow(() -> new BadRequestException(ErrorMessage.INVALID_REFRESH_TOKEN));
+
+        Long userId = tokenProvider.getUserId(refreshToken);
+        User user = userRepository.findById(userId)
+                .orElseThrow(() -> new BadRequestException(ErrorMessage.NOT_EXIST_USER));
+
+        if (!storedRefreshToken.getUserId().equals(user.getId())) {
+            throw new BadRequestException(ErrorMessage.INVALID_REFRESH_TOKEN);
+        }
+
+        String newAccessToken = tokenProvider.createAccessToken(user.getId(), user.getRole().name());
+        String newRefreshToken = tokenProvider.createRefreshToken(user.getId(), user.getRole().name());
+
+        storedRefreshToken.updateRefreshToken(newRefreshToken);
+
+        return tokenBuilder(newAccessToken, newRefreshToken);
+    }
+
+    private TokenDto tokenBuilder(String accessToken, String refreshToken) {
         return TokenDto.builder()
-                .accessToken(token)
+                .accessToken(accessToken)
+                .refreshToken(refreshToken)
                 .build();
     }
 }

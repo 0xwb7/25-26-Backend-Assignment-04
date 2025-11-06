@@ -32,7 +32,6 @@ public class SecurityConfig {
                         -> authorizeRequests
                         .requestMatchers("/auth/**").permitAll()
                         .requestMatchers("/posts/**").permitAll()
-                        .requestMatchers("/comments/**").permitAll()
                         .anyRequest().authenticated()
                 )
                 .addFilterBefore(new JwtFilter(tokenProvider), UsernamePasswordAuthenticationFilter.class)

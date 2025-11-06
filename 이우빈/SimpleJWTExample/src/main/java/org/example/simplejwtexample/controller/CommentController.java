@@ -31,16 +31,8 @@ public class CommentController {
         return ResponseEntity.status(HttpStatus.CREATED).body(commentService.createComment(postId, commentCreateRequest));
     }
 
-    @GetMapping("/posts/{postId}/comments")
-    public ResponseEntity<Page<CommentResponse>> getCommentList(@PathVariable Long postId,
-                                                                @Valid @RequestParam(defaultValue = "0") int page,
-                                                                @Valid @RequestParam(defaultValue = "0") int size) {
-        return ResponseEntity.ok(commentService.listByPost(postId, page, size));
-    }
-
-
     @PatchMapping("/comments/{id}")
-    public ResponseEntity<CommentResponse> updateComment(@PathVariable Long commentId, @RequestBody CommentUpdateRequest commentUpdateRequest) {
+    public ResponseEntity<CommentResponse> updateComment(@PathVariable("id") Long commentId, @RequestBody CommentUpdateRequest commentUpdateRequest) {
         return ResponseEntity.ok(commentService.updateComment(commentId, commentUpdateRequest));
     }
 

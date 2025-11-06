@@ -13,9 +13,6 @@ import org.example.simplejwtexample.repository.CommentRepository;
 import org.example.simplejwtexample.repository.PostRepository;
 import org.example.simplejwtexample.repository.UserRepository;
 import org.example.simplejwtexample.validator.UserValidator;
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.PageRequest;
-import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -41,16 +38,6 @@ public class CommentService {
                 .build());
 
         return CommentResponse.commentInfo(savedComment);
-    }
-
-    @Transactional
-    public Page<CommentResponse> listByPost(Long postId, int page, int size) {
-        Page<Comment> pageResponse = commentRepository.findByPostId(
-                postId,
-                PageRequest.of(page, size, Sort.by(Sort.Direction.ASC, "id"))
-        );
-
-        return pageResponse.map(CommentResponse::commentInfo);
     }
 
     @Transactional

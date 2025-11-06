@@ -1,5 +1,6 @@
 package org.example.simplejwtexample.controller;
 
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.example.simplejwtexample.dto.user.LoginRequest;
 import org.example.simplejwtexample.dto.user.SignUpRequest;
@@ -20,13 +21,13 @@ public class AuthController {
     private final AuthService authService;
 
     @PostMapping("/signup")
-    public ResponseEntity<TokenDto> signUp(@RequestBody SignUpRequest signUpRequest) {
+    public ResponseEntity<TokenDto> signUp(@Valid @RequestBody SignUpRequest signUpRequest) {
         authService.signUp(signUpRequest);
         return ResponseEntity.status(HttpStatus.CREATED).build();
     }
 
     @PostMapping("/login")
-    public ResponseEntity<TokenDto> login(@RequestBody LoginRequest loginRequest) {
+    public ResponseEntity<TokenDto> login(@Valid @RequestBody LoginRequest loginRequest) {
         return ResponseEntity.ok(authService.login(loginRequest));
     }
 }

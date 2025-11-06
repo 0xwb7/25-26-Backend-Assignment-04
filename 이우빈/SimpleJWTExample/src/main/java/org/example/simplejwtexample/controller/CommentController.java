@@ -1,5 +1,6 @@
 package org.example.simplejwtexample.controller;
 
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.example.simplejwtexample.dto.comment.request.CommentCreateRequest;
 import org.example.simplejwtexample.dto.comment.request.CommentUpdateRequest;
@@ -26,14 +27,14 @@ public class CommentController {
     private final CommentService commentService;
 
     @PostMapping("/posts/{postId}/comments")
-    public ResponseEntity<CommentResponse> createComment(@PathVariable Long postId, @RequestBody CommentCreateRequest commentCreateRequest) {
+    public ResponseEntity<CommentResponse> createComment(@PathVariable Long postId, @Valid @RequestBody CommentCreateRequest commentCreateRequest) {
         return ResponseEntity.status(HttpStatus.CREATED).body(commentService.createComment(postId, commentCreateRequest));
     }
 
     @GetMapping("/posts/{postId}/comments")
     public ResponseEntity<Page<CommentResponse>> getCommentList(@PathVariable Long postId,
-                                                                @RequestParam(defaultValue = "0") int page,
-                                                                @RequestParam(defaultValue = "0") int size) {
+                                                                @Valid @RequestParam(defaultValue = "0") int page,
+                                                                @Valid @RequestParam(defaultValue = "0") int size) {
         return ResponseEntity.ok(commentService.listByPost(postId, page, size));
     }
 

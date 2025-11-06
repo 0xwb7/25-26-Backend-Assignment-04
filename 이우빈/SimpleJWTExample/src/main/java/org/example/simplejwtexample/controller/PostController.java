@@ -1,5 +1,6 @@
 package org.example.simplejwtexample.controller;
 
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.example.simplejwtexample.dto.post.request.PostCreateRequest;
 import org.example.simplejwtexample.dto.post.request.PostUpdateRequest;
@@ -26,7 +27,7 @@ public class PostController {
     private final PostService postService;
 
     @PostMapping
-    public ResponseEntity<PostResponse> createPost(@RequestBody PostCreateRequest postCreateRequest) {
+    public ResponseEntity<PostResponse> createPost(@Valid @RequestBody PostCreateRequest postCreateRequest) {
         return ResponseEntity.status(HttpStatus.CREATED).body(postService.createPost(postCreateRequest));
     }
 
@@ -36,13 +37,13 @@ public class PostController {
     }
 
     @GetMapping
-    public ResponseEntity<Page<PostResponse>> getPostList(@RequestParam(defaultValue = "0") int page,
-                                                          @RequestParam(defaultValue = "0") int size) {
+    public ResponseEntity<Page<PostResponse>> getPostList(@Valid @RequestParam(defaultValue = "0") int page,
+                                                          @Valid @RequestParam(defaultValue = "0") int size) {
         return ResponseEntity.ok(postService.postList(page, size));
     }
 
     @PatchMapping("/{id}")
-    public ResponseEntity<PostResponse> updatePost(@PathVariable Long id, @RequestBody PostUpdateRequest postUpdateRequest) {
+    public ResponseEntity<PostResponse> updatePost(@PathVariable Long id, @Valid @RequestBody PostUpdateRequest postUpdateRequest) {
         return ResponseEntity.ok(postService.updatePost(id, postUpdateRequest));
     }
 

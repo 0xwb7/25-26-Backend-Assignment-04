@@ -22,7 +22,7 @@ public class AuthService {
     private final PasswordEncoder passwordEncoder;
     private final TokenProvider tokenProvider;
 
-    public TokenDto signUp(SignUpRequest signUpRequest) {
+    public void signUp(SignUpRequest signUpRequest) {
         userRepository.findByEmail(signUpRequest.getEmail()).ifPresent(user -> {
             throw new BadRequestException(ErrorMessage.ALREADY_EXIST_EMAIL);
         });
@@ -35,9 +35,6 @@ public class AuthService {
                 .build());
 
         String token = tokenProvider.createToken(saveUser.getId(), saveUser.getRole().name());
-        return TokenDto.builder()
-                .accessToken(token)
-                .build();
     }
 
     public TokenDto login(LoginRequest loginRequest) {

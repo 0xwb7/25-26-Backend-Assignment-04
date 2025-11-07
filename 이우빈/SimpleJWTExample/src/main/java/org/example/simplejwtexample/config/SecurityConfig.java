@@ -5,6 +5,7 @@ import org.example.simplejwtexample.jwt.JwtFilter;
 import org.example.simplejwtexample.jwt.TokenProvider;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.http.HttpMethod;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configurers.AbstractHttpConfigurer;
 import org.springframework.security.config.http.SessionCreationPolicy;
@@ -31,7 +32,7 @@ public class SecurityConfig {
                 .authorizeHttpRequests(authorizeRequests
                         -> authorizeRequests
                         .requestMatchers("/auth/**").permitAll()
-                        .requestMatchers("/posts/**").permitAll()
+                        .requestMatchers(HttpMethod.GET, "/posts/**").permitAll()
                         .anyRequest().authenticated()
                 )
                 .addFilterBefore(new JwtFilter(tokenProvider), UsernamePasswordAuthenticationFilter.class)

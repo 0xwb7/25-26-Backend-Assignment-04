@@ -69,10 +69,9 @@ public class TokenProvider {
         Claims claims = parseClaim(token);
         String role = claims.get(ROLE_CLAIM).toString();
 
-        List<GrantedAuthority> authorities =
+        List<SimpleGrantedAuthority> authorities =
                 Arrays.stream(role.split(DELIMITER))
                         .map(SimpleGrantedAuthority::new)
-                        .map(authority -> (GrantedAuthority) authority)
                         .toList();
 
         UsernamePasswordAuthenticationToken authentication =

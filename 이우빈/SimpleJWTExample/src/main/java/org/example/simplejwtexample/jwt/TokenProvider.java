@@ -95,6 +95,7 @@ public class TokenProvider {
 
     public String resolveToken(HttpServletRequest request) {
         String bearer = request.getHeader(AUTHORIZATION);
+
         if (StringUtils.hasText(bearer) && bearer.startsWith(BEARER)) {
             return bearer.substring(BEARER.length());
         }

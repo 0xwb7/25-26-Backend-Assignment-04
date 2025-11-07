@@ -42,12 +42,12 @@ public class SecurityConfig {
                         .authenticationEntryPoint((request, response, authException) -> {
                             response.setStatus(HttpStatus.UNAUTHORIZED.value());
                             response.setContentType(Constants.CONTENT_TYPE);
-                            response.getWriter().write(ErrorMessage.NEED_TO_LOGIN.getMessage());
+                            response.getWriter().write(Constants.MESSAGE_INTRO + ErrorMessage.NEED_TO_LOGIN.getMessage() + Constants.MESSAGE_OUTRO);
                         })
                         .accessDeniedHandler((request, response, accessDeniedException) -> {
                             response.setStatus(HttpStatus.FORBIDDEN.value());
                             response.setContentType(Constants.CONTENT_TYPE);
-                            response.getWriter().write(ErrorMessage.NO_PERMISSION.getMessage());
+                            response.getWriter().write(Constants.MESSAGE_INTRO + ErrorMessage.NO_PERMISSION.getMessage() + Constants.MESSAGE_OUTRO);
                         })
                 )
                 .addFilterBefore(new JwtFilter(tokenProvider), UsernamePasswordAuthenticationFilter.class)

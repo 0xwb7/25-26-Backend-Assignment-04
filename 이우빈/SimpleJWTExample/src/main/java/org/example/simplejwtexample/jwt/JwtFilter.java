@@ -47,6 +47,6 @@ public class JwtFilter extends GenericFilterBean {
     private void setErrorResponse(HttpServletResponse response, int status, String message) throws IOException {
         response.setStatus(status);
         response.setContentType(Constants.CONTENT_TYPE);
-        response.getWriter().write("{\"message\":\"" + message + "\"}");
+        response.getWriter().write(Constants.MESSAGE_INTRO + message + Constants.MESSAGE_OUTRO);
     }
 }

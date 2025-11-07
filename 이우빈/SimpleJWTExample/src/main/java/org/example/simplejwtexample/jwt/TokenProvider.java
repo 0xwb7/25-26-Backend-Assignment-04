@@ -20,6 +20,7 @@ import javax.crypto.SecretKey;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.Date;
+import java.util.List;
 
 @Component
 public class TokenProvider {
@@ -68,9 +69,10 @@ public class TokenProvider {
         Claims claims = parseClaim(token);
         String role = claims.get(ROLE_CLAIM).toString();
 
-        Collection<? extends GrantedAuthority> authorities =
+        List<GrantedAuthority> authorities =
                 Arrays.stream(role.split(DELIMITER))
                         .map(SimpleGrantedAuthority::new)
+                        .map(authority -> (GrantedAuthority) authority)
                         .toList();
 
         UsernamePasswordAuthenticationToken authentication =

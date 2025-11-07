@@ -13,20 +13,22 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 @RequiredArgsConstructor
 public class AdminConfig {
 
+    private static final String ADMIN_NAME = "admin";
+    private static final String ADMIN_EMAIL = "admin@admin.com";
+    private static final String ADMIN_PASSWORD = "admin123";
+
     private final UserRepository userRepository;
     private final PasswordEncoder passwordEncoder;
 
     @Bean
     public CommandLineRunner setAdmin() {
         return args -> {
-            String adminEmail = "admin@admin.com";
-
-            userRepository.findByEmail(adminEmail)
+            userRepository.findByEmail(ADMIN_EMAIL)
                     .orElseGet(() -> userRepository.save(
                             User.builder()
-                                    .name("Admin")
-                                    .email(adminEmail)
-                                    .password(passwordEncoder.encode("admin123"))
+                                    .name(ADMIN_NAME)
+                                    .email(ADMIN_EMAIL)
+                                    .password(passwordEncoder.encode(ADMIN_PASSWORD))
                                     .role(Role.ROLE_ADMIN)
                                     .build()
                     ));

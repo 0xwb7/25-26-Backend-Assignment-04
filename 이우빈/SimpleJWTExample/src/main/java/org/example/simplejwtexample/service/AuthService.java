@@ -68,18 +68,18 @@ public class AuthService {
     @Transactional
     public TokenDto refreshToken(String refreshToken) {
         if (!tokenProvider.validateToken(refreshToken)) {
-            throw new BadRequestException(ErrorMessage.INVALID_REFRESH_TOKEN);
+            throw new BadRequestException(ErrorMessage.INVALID_TOKEN);
         }
 
         RefreshToken storedRefreshToken = refreshTokenRepository.findByToken(refreshToken)
-                .orElseThrow(() -> new BadRequestException(ErrorMessage.INVALID_REFRESH_TOKEN));
+                .orElseThrow(() -> new BadRequestException(ErrorMessage.INVALID_TOKEN));
 
         Long userId = tokenProvider.getUserId(refreshToken);
         User user = userRepository.findById(userId)
                 .orElseThrow(() -> new BadRequestException(ErrorMessage.NOT_EXIST_USER));
 
         if (!storedRefreshToken.getUserId().equals(user.getId())) {
-            throw new BadRequestException(ErrorMessage.INVALID_REFRESH_TOKEN);
+            throw new BadRequestException(ErrorMessage.INVALID_TOKEN);
         }
 
         String newAccessToken = tokenProvider.createAccessToken(user.getId(), user.getRole().name());

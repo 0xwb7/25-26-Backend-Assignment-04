@@ -12,7 +12,7 @@ public enum ErrorMessage {
     NEED_TO_LOGIN("로그인이 필요한 서비스입니다."),
     NO_PERMISSION("수정/삭제 권한이 없습니다."),
     NOT_EXIST_COMMENT("존재하지 않는 댓글입니다."),
-    INVALID_REFRESH_TOKEN("유효하지 않은 토큰입니다.");
+    INVALID_TOKEN("유효하지 않은 토큰입니다.");
 
     private final String message;
 

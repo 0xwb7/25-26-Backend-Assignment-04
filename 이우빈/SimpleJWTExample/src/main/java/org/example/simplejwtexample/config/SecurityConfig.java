@@ -1,6 +1,8 @@
 package org.example.simplejwtexample.config;
 
 import lombok.RequiredArgsConstructor;
+import org.example.simplejwtexample.constants.Constants;
+import org.example.simplejwtexample.exception.ErrorMessage;
 import org.example.simplejwtexample.jwt.JwtFilter;
 import org.example.simplejwtexample.jwt.TokenProvider;
 import org.springframework.context.annotation.Bean;
@@ -19,9 +21,6 @@ import org.springframework.security.web.authentication.UsernamePasswordAuthentic
 @RequiredArgsConstructor
 public class SecurityConfig {
 
-    private static final String CONTENT_TYPE = "application/json;charset=UTF-8";
-    private static final String NEED_TO_LOGIN = "{\"message\":\"로그인이 필요한 서비스입니다.\"}";
-    private static final String NO_PERMISSION = "{\"message\":\"수정/삭제 권한이 없습니다.\"}";
     private final TokenProvider tokenProvider;
 
     @Bean
@@ -42,13 +41,13 @@ public class SecurityConfig {
                 .exceptionHandling(exception -> exception
                         .authenticationEntryPoint((request, response, authException) -> {
                             response.setStatus(HttpStatus.UNAUTHORIZED.value());
-                            response.setContentType(CONTENT_TYPE);
-                            response.getWriter().write(NEED_TO_LOGIN);
+                            response.setContentType(Constants.CONTENT_TYPE);
+                            response.getWriter().write(ErrorMessage.NEED_TO_LOGIN.getMessage());
                         })
                         .accessDeniedHandler((request, response, accessDeniedException) -> {
                             response.setStatus(HttpStatus.FORBIDDEN.value());
-                            response.setContentType(CONTENT_TYPE);
-                            response.getWriter().write(NO_PERMISSION);
+                            response.setContentType(Constants.CONTENT_TYPE);
+                            response.getWriter().write(ErrorMessage.NO_PERMISSION.getMessage());
                         })
                 )
                 .addFilterBefore(new JwtFilter(tokenProvider), UsernamePasswordAuthenticationFilter.class)

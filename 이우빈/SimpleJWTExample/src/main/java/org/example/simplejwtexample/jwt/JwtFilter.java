@@ -7,6 +7,8 @@ import jakarta.servlet.ServletResponse;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
+import org.example.simplejwtexample.constants.Constants;
+import org.example.simplejwtexample.exception.ErrorMessage;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
@@ -18,8 +20,6 @@ import java.io.IOException;
 @RequiredArgsConstructor
 public class JwtFilter extends GenericFilterBean {
 
-    private static final String INVALID_TOKEN = "유효하지 않은 토큰입니다.";
-    private static final String CONTENT_TYPE = "application/json; charset=utf-8";
     private final TokenProvider tokenProvider;
 
     @Override
@@ -33,7 +33,7 @@ public class JwtFilter extends GenericFilterBean {
 
         if (StringUtils.hasText(token)) {
             if (!tokenProvider.validateToken(token)) {
-                setErrorResponse(httpServletResponse, HttpStatus.UNAUTHORIZED.value(), INVALID_TOKEN);
+                setErrorResponse(httpServletResponse, HttpStatus.UNAUTHORIZED.value(), ErrorMessage.INVALID_TOKEN.getMessage());
                 return;
             }
 
@@ -46,7 +46,7 @@ public class JwtFilter extends GenericFilterBean {
 
     private void setErrorResponse(HttpServletResponse response, int status, String message) throws IOException {
         response.setStatus(status);
-        response.setContentType(CONTENT_TYPE);
+        response.setContentType(Constants.CONTENT_TYPE);
         response.getWriter().write("{\"message\":\"" + message + "\"}");
     }
 }

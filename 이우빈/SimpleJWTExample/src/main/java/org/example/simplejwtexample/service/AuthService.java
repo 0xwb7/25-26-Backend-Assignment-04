@@ -66,7 +66,7 @@ public class AuthService {
     }
 
     @Transactional
-    public TokenDto refreshToken(String refreshToken) {
+    public TokenDto reissueToken(String refreshToken) {
         if (!tokenProvider.validateToken(refreshToken)) {
             throw new BadRequestException(ErrorMessage.INVALID_TOKEN);
         }

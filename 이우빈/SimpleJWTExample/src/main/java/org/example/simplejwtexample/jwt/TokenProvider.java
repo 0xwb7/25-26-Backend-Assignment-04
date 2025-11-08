@@ -4,6 +4,7 @@ import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.ExpiredJwtException;
 import io.jsonwebtoken.JwtException;
 import io.jsonwebtoken.Jwts;
+import io.jsonwebtoken.SignatureAlgorithm;
 import io.jsonwebtoken.io.Decoders;
 import io.jsonwebtoken.security.Keys;
 import io.jsonwebtoken.security.SecurityException;
@@ -62,6 +63,7 @@ public class TokenProvider {
                 .subject(userId.toString())
                 .issuedAt(now)
                 .expiration(expiration)
+                .signWith(key)
                 .compact();
     }
 

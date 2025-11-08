@@ -59,9 +59,7 @@ public class TokenProvider {
 
         return Jwts.builder()
                 .subject(userId.toString())
-                .claim(ROLE_CLAIM, role)
                 .expiration(expiration)
-                .signWith(key)
                 .compact();
     }
 

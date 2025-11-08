@@ -8,6 +8,8 @@ import io.jsonwebtoken.io.Decoders;
 import io.jsonwebtoken.security.Keys;
 import io.jsonwebtoken.security.SecurityException;
 import jakarta.servlet.http.HttpServletRequest;
+import org.example.simplejwtexample.exception.BadRequestException;
+import org.example.simplejwtexample.exception.ErrorMessage;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
@@ -47,6 +49,7 @@ public class TokenProvider {
         return Jwts.builder()
                 .subject(userId.toString())
                 .claim(ROLE_CLAIM, role)
+                .claim("token_type", "access_token")
                 .issuedAt(now)
                 .expiration(expiration)
                 .signWith(key)
@@ -59,6 +62,7 @@ public class TokenProvider {
 
         return Jwts.builder()
                 .subject(userId.toString())
+                .claim("token_type", "refresh_token")
                 .issuedAt(now)
                 .expiration(expiration)
                 .signWith(key)
@@ -67,7 +71,13 @@ public class TokenProvider {
 
     public Authentication getAuthentication(String token) {
         Claims claims = parseClaim(token);
-        String role = claims.get(ROLE_CLAIM).toString();
+        String tokenType = claims.get("token_type", String.class);
+
+        if (tokenType.equals("refresh_token")) {
+            throw new BadRequestException(ErrorMessage.NO_REFRESH_TOKEN_IN_LOGIN);
+        }
+
+        String role = claims.get(ROLE_CLAIM, String.class);
 
         List<GrantedAuthority> authorities =
                 Arrays.stream(role.split(DELIMITER))

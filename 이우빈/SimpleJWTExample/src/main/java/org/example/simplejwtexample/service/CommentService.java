@@ -9,6 +9,7 @@ import org.example.simplejwtexample.dto.comment.request.CommentUpdateRequest;
 import org.example.simplejwtexample.dto.comment.response.CommentResponse;
 import org.example.simplejwtexample.exception.BadRequestException;
 import org.example.simplejwtexample.exception.ErrorMessage;
+import org.example.simplejwtexample.exception.NotFoundException;
 import org.example.simplejwtexample.repository.CommentRepository;
 import org.example.simplejwtexample.repository.PostRepository;
 import org.example.simplejwtexample.repository.UserRepository;
@@ -28,9 +29,9 @@ public class CommentService {
     public CommentResponse createComment(Long postId, CommentCreateRequest commentCreateRequest) {
         Long currentId = requiredLogin();
         Post post = postRepository.findById(postId)
-                .orElseThrow(() -> new BadRequestException(ErrorMessage.NOT_EXIST_POST));
+                .orElseThrow(() -> new NotFoundException(ErrorMessage.NOT_EXIST_POST));
         User author = userRepository.findById(currentId)
-                .orElseThrow(() -> new BadRequestException(ErrorMessage.NOT_EXIST_USER));
+                .orElseThrow(() -> new NotFoundException(ErrorMessage.NOT_EXIST_USER));
         Comment savedComment = commentRepository.save(Comment.builder()
                 .post(post)
                 .author(author)
@@ -43,7 +44,7 @@ public class CommentService {
     @Transactional
     public CommentResponse updateComment(Long id, CommentUpdateRequest commentUpdateRequest) {
         Comment comment = commentRepository.findById(id)
-                .orElseThrow(() -> new BadRequestException(ErrorMessage.NOT_EXIST_COMMENT));
+                .orElseThrow(() -> new NotFoundException(ErrorMessage.NOT_EXIST_COMMENT));
         checkOwnerOrAdmin(comment.getAuthor().getId());
         comment.updateComment(commentUpdateRequest.getContent());
 
@@ -53,7 +54,7 @@ public class CommentService {
     @Transactional
     public void deleteComment(Long id) {
         Comment comment = commentRepository.findById(id)
-                .orElseThrow(() -> new BadRequestException(ErrorMessage.NOT_EXIST_COMMENT));
+                .orElseThrow(() -> new NotFoundException(ErrorMessage.NOT_EXIST_COMMENT));
         checkOwnerOrAdmin(comment.getAuthor().getId());
         commentRepository.delete(comment);
     }

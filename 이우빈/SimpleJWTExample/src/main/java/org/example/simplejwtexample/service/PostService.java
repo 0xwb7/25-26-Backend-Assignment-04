@@ -9,6 +9,7 @@ import org.example.simplejwtexample.dto.post.request.PostUpdateRequest;
 import org.example.simplejwtexample.dto.post.response.PostResponse;
 import org.example.simplejwtexample.exception.BadRequestException;
 import org.example.simplejwtexample.exception.ErrorMessage;
+import org.example.simplejwtexample.exception.NotFoundException;
 import org.example.simplejwtexample.repository.CommentRepository;
 import org.example.simplejwtexample.repository.PostRepository;
 import org.example.simplejwtexample.repository.UserRepository;
@@ -30,7 +31,7 @@ public class PostService {
     public PostResponse createPost(PostCreateRequest postCreateRequest) {
         Long currentId = requiredLogin();
         User author = userRepository.findById(currentId)
-                .orElseThrow(() -> new BadRequestException(ErrorMessage.NOT_EXIST_USER));
+                .orElseThrow(() -> new NotFoundException(ErrorMessage.NOT_EXIST_USER));
 
         Post savedPost = postRepository.save(Post.builder()
                 .author(author)
@@ -44,7 +45,7 @@ public class PostService {
     @Transactional(readOnly = true)
     public PostResponse getPost(Long id) {
         Post post = postRepository.findById(id)
-                .orElseThrow(() -> new BadRequestException(ErrorMessage.NOT_EXIST_POST));
+                .orElseThrow(() -> new NotFoundException(ErrorMessage.NOT_EXIST_POST));
 
         List<Comment> comments = commentRepository.findByPostIdOrderByIdAsc(id);
 
@@ -54,7 +55,7 @@ public class PostService {
     @Transactional
     public PostResponse updatePost(Long id, PostUpdateRequest postUpdateRequest) {
         Post post = postRepository.findById(id)
-                .orElseThrow(() -> new BadRequestException(ErrorMessage.NOT_EXIST_POST));
+                .orElseThrow(() -> new NotFoundException(ErrorMessage.NOT_EXIST_POST));
         checkOwnerOrAdmin(post.getAuthor().getId());
         post.updatePost(postUpdateRequest.getTitle(), postUpdateRequest.getContent());
 
@@ -64,7 +65,7 @@ public class PostService {
     @Transactional
     public void deletePost(Long id) {
         Post post = postRepository.findById(id)
-                .orElseThrow(() -> new BadRequestException(ErrorMessage.NOT_EXIST_POST));
+                .orElseThrow(() -> new NotFoundException(ErrorMessage.NOT_EXIST_POST));
         checkOwnerOrAdmin(post.getAuthor().getId());
 
         commentRepository.deleteByPostId(id);

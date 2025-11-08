@@ -48,6 +48,7 @@ public class TokenProvider {
         return Jwts.builder()
                 .subject(userId.toString())
                 .claim(ROLE_CLAIM, role)
+                .issuedAt(now)
                 .expiration(expiration)
                 .signWith(key)
                 .compact();
@@ -59,6 +60,7 @@ public class TokenProvider {
 
         return Jwts.builder()
                 .subject(userId.toString())
+                .issuedAt(now)
                 .expiration(expiration)
                 .compact();
     }
